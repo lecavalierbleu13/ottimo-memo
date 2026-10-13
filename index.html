@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ottimo Memo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#000;font-size:16px;-webkit-font-smoothing:antialiased}
+body{padding-bottom:100px}
+
+.container{max-width:540px;margin:0 auto}
+.view{display:none;animation:fadeIn .3s}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.header{padding:20px 20px 10px;position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.08);z-index:50}
+.header-title{font-size:32px;font-weight:700;letter-spacing:-.02em}
+.header-sub{font-size:13px;color:#666;margin-top:2px;font-weight:500}
+
+.section{padding:0 20px;margin-bottom:30px}
+.section-title{font-size:13px;font-weight:600;text-transform:uppercase;color:#666;margin-bottom:12px;letter-spacing:.5px}
+.card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:16px;margin-bottom:12px}
+
+.list-item{padding:14px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;gap:12px}
+.list-item:last-child{border-bottom:none}
+.list-item-title{font-size:15px;font-weight:500}
+.list-item-sub{font-size:13px;color:#666;margin-top:3px}
+.list-action{font-size:13px;color:#0071e3;cursor:pointer;font-weight:500}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:999}
+.modal-overlay.open{display:flex;align-items:flex-end}
+.modal-sheet{width:100%;background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 30px;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:rgba(0,0,0,.06);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:none;font-weight:500}
+.modal-title{font-size:24px;font-weight:700;margin-bottom:20px}
+
+.field-label{font-size:13px;font-weight:600;margin-top:16px;margin-bottom:6px}
+.field-input{width:100%;padding:12px 14px;border:1px solid rgba(0,0,0,.12);border-radius:10px;font-size:16px;font-family:inherit;margin-bottom:2px}
+.field-input:focus{outline:none;border-color:#0071e3}
+textarea.field-input{min-height:90px;resize:vertical}
+
+.btn-group{display:flex;gap:12px;margin-top:24px}
+.btn{flex:1;padding:14px;border-radius:10px;font-weight:600;font-size:15px;border:none;cursor:pointer}
+.btn-primary{background:#0071e3;color:#fff}
+.btn-secondary{background:rgba(0,0,0,.06);color:#000}
+
+.seg-control{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+.seg-btn{flex:1;min-width:60px;padding:10px;border:1px solid rgba(0,0,0,.12);border-radius:8px;background:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.seg-btn.active{background:#0071e3;color:#fff;border-color:#0071e3}
+
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;height:80px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.08);display:flex;justify-content:space-around;z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:1;cursor:pointer;color:#666;font-size:11px;font-weight:500}
+.nav-item.active{color:#0071e3}
+
+.action-link{color:#0071e3;font-size:13px;font-weight:500;cursor:pointer;padding:12px 0;display:block}
+
+.empty{text-align:center;padding:40px 20px;color:#999;font-size:14px}
+
+.metric{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.metric:last-child{border-bottom:none}
+.metric-label{font-size:13px;color:#666}
+.metric-value{font-size:18px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="view active" id="homeView">
+  <div class="header">
+    <div class="header-title">Ottimo</div>
+    <div class="header-sub">Carnet de suivi</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Vue d'ensemble</div>
+    <div class="card">
+      <div class="metric"><div><div class="metric-label">Parage</div><div style="font-size:11px;color:#999">10 juin 2026</div></div><div class="metric-value">13 j</div></div>
+      <div class="metric"><div><div class="metric-label">Vaccins</div><div style="font-size:11px;color:#999">Grippe</div></div><div class="metric-value">1100 j</div></div>
+      <div class="metric"><div><div class="metric-label">Météo Aubagne</div><div style="font-size:11px;color:#999">Max 25°C</div></div><div class="metric-value">18°C</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Compléments</div>
+    <div class="card" id="homeComps"></div>
+    <div class="action-link" onclick="switchView('sante')">→ Voir tous les compléments</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Incidents récents</div>
+    <div class="card" id="homeIncidents"></div>
+  </div>
+</div>
+
+<!-- PLANNING -->
+<div class="view" id="planningView">
+  <div class="header">
+    <div class="header-title">Planning</div>
+  </div>
+  <div class="section">
+    <div class="card" style="text-align:center;padding:40px 20px;color:#999">Calendrier en construction</div>
+  </div>
+</div>
+
+<!-- SEANCE -->
+<div class="view" id="seanceView">
+  <div class="header">
+    <div class="header-title">Séance</div>
+  </div>
+  <div class="section">
+    <div class="card" style="line-height:1.8;font-size:14px;color:#333">
+      ✓ État général<br>
+      ✓ Palpation abdomen<br>
+      ✓ Appétit et transit<br>
+      ✓ Préparation mentale
+    </div>
+    <div class="action-link" onclick="openSeanceModal()">+ Nouvelle séance</div>
+  </div>
+</div>
+
+<!-- SANTE -->
+<div class="view" id="santeView">
+  <div class="header">
+    <div class="header-title">Santé</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Compléments</div>
+    <div class="card" id="santeComps"></div>
+    <div class="action-link" onclick="openCompModal()">+ Ajouter un complément</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Incidents</div>
+    <div class="card" id="santeIncidents"></div>
+    <div class="action-link" onclick="openIncidentModal()">+ Signaler un incident</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Soins</div>
+    <div class="card" id="santeSoins"></div>
+    <div class="action-link" onclick="openSoinModal()">+ Ajouter un soin</div>
+  </div>
+</div>
+
+<!-- ANALYSES -->
+<div class="view" id="analysesView">
+  <div class="header">
+    <div class="header-title">Analyses</div>
+  </div>
+  <div class="section">
+    <div class="card" style="text-align:center;padding:40px 20px;color:#999">Graphiques en construction</div>
+  </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal-overlay" id="seanceModal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeSeanceModal()">✕</button>
+    <div class="modal-title">Nouvelle séance</div>
+    <div class="field-label">Date</div>
+    <input type="date" class="field-input" id="seanceDate">
+    <div class="field-label">Qui a monté</div>
+    <div class="seg-control">
+      <div class="seg-btn active" data-v="andy" onclick="selectSeg(this)">Andy</div>
+      <div class="seg-btn" data-v="martin" onclick="selectSeg(this)">Martin</div>
+      <div class="seg-btn" data-v="conc" onclick="selectSeg(this)">Concours</div>
+    </div>
+    <div class="field-label">Programme</div>
+    <textarea class="field-input" id="seanceProgram"></textarea>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeSeanceModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveSeance()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="compModal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeCompModal()">✕</button>
+    <div class="modal-title">Complément</div>
+    <div class="field-label">Nom</div>
+    <input type="text" class="field-input" id="compName">
+    <div class="field-label">Dose</div>
+    <input type="text" class="field-input" id="compDose">
+    <div class="field-label">Début</div>
+    <input type="date" class="field-input" id="compStart">
+    <div class="field-label">Notes</div>
+    <textarea class="field-input" id="compNotes"></textarea>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeCompModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveComp()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="incidentModal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeIncidentModal()">✕</button>
+    <div class="modal-title">Incident</div>
+    <div class="field-label">Type</div>
+    <div class="seg-control">
+      <div class="seg-btn active" data-v="colique" onclick="selectSeg(this)">Colique</div>
+      <div class="seg-btn" data-v="blessure" onclick="selectSeg(this)">Blessure</div>
+      <div class="seg-btn" data-v="autre" onclick="selectSeg(this)">Autre</div>
+    </div>
+    <div class="field-label">Date</div>
+    <input type="date" class="field-input" id="incDate">
+    <div class="field-label">Symptômes</div>
+    <textarea class="field-input" id="incSymptoms"></textarea>
+    <div class="field-label">Traitement</div>
+    <textarea class="field-input" id="incTreatment"></textarea>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeIncidentModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveIncident()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="soinModal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeSoinModal()">✕</button>
+    <div class="modal-title">Soin</div>
+    <div class="field-label">Type</div>
+    <input type="text" class="field-input" id="soinType" placeholder="Ostéo, Maréchal...">
+    <div class="field-label">Date</div>
+    <input type="date" class="field-input" id="soinDate">
+    <div class="field-label">Praticien</div>
+    <input type="text" class="field-input" id="soinPraticien">
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeSoinModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveSoin()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" data-v="home" onclick="switchView('home')"><div style="font-size:20px">⌂</div>Accueil</div>
+  <div class="nav-item" data-v="planning" onclick="switchView('planning')"><div style="font-size:20px">📅</div>Planning</div>
+  <div class="nav-item" data-v="seance" onclick="switchView('seance')"><div style="font-size:20px">🐴</div>Séance</div>
+  <div class="nav-item" data-v="sante" onclick="switchView('sante')"><div style="font-size:20px">⚕️</div>Santé</div>
+  <div class="nav-item" data-v="analyses" onclick="switchView('analyses')"><div style="font-size:20px">📊</div>Analyses</div>
+</div>
+
+<script>
+const SUPABASE_URL='https://tzzeljxfhpfyonpunbuq.supabase.co';
+const SUPABASE_KEY='sb_publishable_fOUTzudeNjohDyG4P8fO-A_pGdplYpf';
+
+async function storageGet(key,def){try{const r=await fetch(SUPABASE_URL+'/rest/v1/ottimo_data?key=eq.'+key,{headers:{'apikey':SUPABASE_KEY}});const d=await r.json();return d.length>0?d[0].value:def}catch(e){return def}}
+async function storageSet(key,val){try{await fetch(SUPABASE_URL+'/rest/v1/ottimo_data',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({key,value:val,updated_at:new Date().toISOString()})})}catch(e){}}
+
+function switchView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById(v+'View').classList.add('active');document.querySelector('.nav-item[data-v="'+v+'"]').classList.add('active');if(v==='sante')loadSante()}
+
+function selectSeg(el){el.parentElement.querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+
+// SEANCE
+function openSeanceModal(){document.getElementById('seanceModal').classList.add('open')}
+function closeSeanceModal(){document.getElementById('seanceModal').classList.remove('open')}
+async function saveSeance(){const date=document.getElementById('seanceDate').value;const rider=document.querySelector('#seanceModal .seg-btn.active').dataset.v;const prog=document.getElementById('seanceProgram').value;const seances=await storageGet('ottimo_seances',[]);seances.push({id:Date.now(),date,rider,prog});await storageSet('ottimo_seances',seances);closeSeanceModal();alert('Séance enregistrée')}
+
+// COMP
+function openCompModal(){document.getElementById('compModal').classList.add('open')}
+function closeCompModal(){document.getElementById('compModal').classList.remove('open')}
+async function saveComp(){const name=document.getElementById('compName').value;const dose=document.getElementById('compDose').value;const start=document.getElementById('compStart').value;const notes=document.getElementById('compNotes').value;const comps=await storageGet('ottimo_comps',[]);comps.push({id:Date.now(),name,dose,start,notes});await storageSet('ottimo_comps',comps);closeCompModal();loadSante();alert('Complément enregistré')}
+
+async function loadComps(){const comps=await storageGet('ottimo_comps',[]);let html='';if(comps.length===0)html='<div class="empty">Aucun complément</div>';else comps.forEach(c=>{html+=`<div class="list-item"><div><div class="list-item-title">${c.name}</div><div class="list-item-sub">${c.dose}</div></div><div class="list-action" onclick="openCompModal()">Modifier</div></div>`});document.getElementById('homeComps').innerHTML=html;document.getElementById('santeComps').innerHTML=html}
+
+// INCIDENT
+function openIncidentModal(){document.getElementById('incidentModal').classList.add('open')}
+function closeIncidentModal(){document.getElementById('incidentModal').classList.remove('open')}
+async function saveIncident(){const type=document.querySelector('#incidentModal .seg-btn.active').dataset.v;const date=document.getElementById('incDate').value;const symptoms=document.getElementById('incSymptoms').value;const treatment=document.getElementById('incTreatment').value;const incidents=await storageGet('ottimo_incidents',[]);incidents.push({id:Date.now(),type,date,symptoms,treatment});await storageSet('ottimo_incidents',incidents);closeIncidentModal();loadSante();alert('Incident enregistré')}
+
+async function loadIncidents(){const incidents=await storageGet('ottimo_incidents',[]);let html='';if(incidents.length===0)html='<div class="empty">Aucun incident</div>';else incidents.slice(-3).reverse().forEach(i=>{html+=`<div class="list-item"><div><div class="list-item-title">${i.type.charAt(0).toUpperCase()+i.type.slice(1)}</div><div class="list-item-sub">${i.date}</div></div></div>`});document.getElementById('homeIncidents').innerHTML=html;document.getElementById('santeIncidents').innerHTML=html}
+
+// SOIN
+function openSoinModal(){document.getElementById('soinModal').classList.add('open')}
+function closeSoinModal(){document.getElementById('soinModal').classList.remove('open')}
+async function saveSoin(){const type=document.getElementById('soinType').value;const date=document.getElementById('soinDate').value;const praticien=document.getElementById('soinPraticien').value;const soins=await storageGet('ottimo_soins',[]);soins.push({id:Date.now(),type,date,praticien});await storageSet('ottimo_soins',soins);closeSoinModal();loadSante();alert('Soin enregistré')}
+
+async function loadSoins(){const soins=await storageGet('ottimo_soins',[]);let html='';if(soins.length===0)html='<div class="empty">Aucun soin</div>';else soins.forEach(s=>{html+=`<div class="list-item"><div><div class="list-item-title">${s.type}</div><div class="list-item-sub">${s.praticien?s.praticien+' • ':''} ${s.date}</div></div></div>`});document.getElementById('santeSoins').innerHTML=html}
+
+async function loadSante(){await loadComps();await loadIncidents();await loadSoins()}
+
+// INIT
+loadComps();loadIncidents();
+</script>
+</body>
+</html>
