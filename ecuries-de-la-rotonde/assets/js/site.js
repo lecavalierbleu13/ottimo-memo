@@ -1,7 +1,13 @@
 (() => {
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Adresse e-mail assemblée au chargement : elle n'apparaît pas en clair dans le code de la page */
+  const mail = ['contact', 'ecuriesdelarotonde.fr'].join('@');
+  document.querySelectorAll('[data-mail]').forEach((el) => {
+    el.setAttribute('href', 'mailto:' + mail);
+    if (el.hasAttribute('data-mail-text')) el.textContent = mail;
+  });
 
   /* Apparition des blocs au défilement */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealables = document.querySelectorAll('[data-reveal]');
   if (!reduceMotion && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
