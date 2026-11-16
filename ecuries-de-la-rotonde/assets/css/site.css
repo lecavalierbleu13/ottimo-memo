@@ -114,12 +114,13 @@ section[id] { scroll-margin-top: var(--header); }
 .overlay.is-open li:nth-child(3) { transition-delay: 0.1s; }
 .overlay.is-open li:nth-child(4) { transition-delay: 0.15s; }
 .overlay.is-open li:nth-child(5) { transition-delay: 0.2s; }
+.overlay.is-open li:nth-child(6) { transition-delay: 0.25s; }
 .overlay__contact { display: grid; gap: 6px; color: var(--on-navy-muted); }
 .overlay__contact a { color: var(--cream); font-size: 1.125rem; }
 body.menu-open { overflow: hidden; }
 body.menu-open .header { color: var(--cream); background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .nav { display: none; }
   .menu-btn { display: inline-block; }
   .brand svg:last-child { width: 118px; }
@@ -239,6 +240,21 @@ body.menu-open .header { color: var(--cream); background: transparent; box-shado
   }
 }
 @keyframes parallax { from { transform: translateY(-6%); } to { transform: translateY(6%); } }
+
+/* L'équipe */
+.team .title { margin-bottom: clamp(36px, 5vw, 56px); }
+.people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
+.person { display: grid; align-content: start; gap: 28px; min-width: 0; padding: clamp(28px, 4vw, 56px); background: var(--cream-deep); }
+.person__head { display: grid; gap: 8px; }
+.person h3 { font-size: clamp(2rem, 3.2vw, 2.8rem); line-height: 1.05; letter-spacing: -0.025em; color: var(--navy); }
+.person__role { color: var(--muted); }
+.person__figures { display: flex; flex-wrap: wrap; gap: 20px 56px; }
+.person__figures li { display: grid; gap: 6px; }
+.person__figures strong { font-family: var(--display); font-weight: 500; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1; letter-spacing: -0.02em; color: var(--navy); white-space: nowrap; }
+.person__figures span { color: var(--muted); font-size: 0.9375rem; }
+.person__bio { max-width: 62ch; color: var(--ink); }
+.nw { white-space: nowrap; }
+@media (max-width: 860px) { .people { grid-template-columns: 1fr; } }
 
 /* La structure */
 .structure__head { display: grid; gap: 18px; margin-bottom: clamp(40px, 5vw, 64px); }
